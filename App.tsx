@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SimulationCanvas } from './components/SimulationCanvas';
 import { Button } from './components/Button';
-import { GeminiTutor } from './components/GeminiTutor';
 import { ContainerType, MatterState, ContainerData } from './types';
 
 // Initial Containers
@@ -115,8 +114,6 @@ const App: React.FC = () => {
           />
         </div>
       </main>
-
-      <GeminiTutor />
     </div>
   );
 };
