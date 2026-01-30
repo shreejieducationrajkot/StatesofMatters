@@ -85,7 +85,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     particles: Particle[]
   ) => {
     const depth = w * 0.3;
-    const pad = 10;
+    const pad = w * 0.05; // Relative padding
     
     // Front face coordinates
     const fx = x + pad; 
@@ -125,7 +125,9 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     // --- 2. Draw Contents ---
     if (matter === MatterState.SOLID) {
       // Rock sits on the floor (back-weighted for perspective)
-      drawRock(ctx, bx + fw/2 - 20, by + fh - 35, 60);
+      // Scale rock size relative to container
+      const rockSize = fw * 0.5;
+      drawRock(ctx, bx + fw/2 - rockSize*0.3, by + fh - rockSize*0.6, rockSize);
     } else if (matter === MatterState.LIQUID) {
       const lh = fh * waterLevel;
       const lfy = fy + fh - lh; // Liquid Front Y
@@ -180,10 +182,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     // Reflections (Diagonal streaks on front face)
     ctx.fillStyle = COLORS.glassHighlight;
     ctx.beginPath();
-    ctx.moveTo(fx + fw - 30, fy + 10);
-    ctx.lineTo(fx + fw - 10, fy + 10);
-    ctx.lineTo(fx + fw - 10, fy + 50);
-    ctx.lineTo(fx + fw - 40, fy + 50);
+    ctx.moveTo(fx + fw - (fw*0.3), fy + (fh*0.1));
+    ctx.lineTo(fx + fw - (fw*0.1), fy + (fh*0.1));
+    ctx.lineTo(fx + fw - (fw*0.1), fy + (fh*0.5));
+    ctx.lineTo(fx + fw - (fw*0.4), fy + (fh*0.5));
     ctx.closePath();
     ctx.fill();
   };
@@ -200,11 +202,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     const jw = w * 0.7; 
     const jx = x + (w - jw) / 2;
     const rx = jw / 2;
-    const ry = 12; // Ellipse height radius
+    const ry = w * 0.1; // Ellipse height radius (relative to width)
 
     // Top and Bottom Centers
-    const ty = y + ry + 10;
-    const by = y + h - ry - 5;
+    const ty = y + ry + (h*0.05);
+    const by = y + h - ry - (h*0.02);
     
     // Center X
     const cx = jx + rx;
@@ -230,7 +232,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
     // --- 2. Contents ---
     if (matter === MatterState.SOLID) {
-      drawRock(ctx, cx - 10, by - 30, 50);
+        const rockSize = jw * 0.6;
+      drawRock(ctx, cx - rockSize*0.2, by - rockSize*0.6, rockSize);
     } else if (matter === MatterState.LIQUID) {
       const cylH = by - ty;
       const lh = cylH * waterLevel;
@@ -284,8 +287,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     ctx.strokeStyle = COLORS.glassHighlight;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(jx + 10, ty + 15);
-    ctx.lineTo(jx + 10, by - 15);
+    ctx.moveTo(jx + (jw*0.1), ty + (ry*1.5));
+    ctx.lineTo(jx + (jw*0.1), by - (ry*1.5));
     ctx.stroke();
   };
 
@@ -298,13 +301,13 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     particles: Particle[]
   ) => {
     const cx = x + w/2;
-    const cy = y + h/2 + 10;
-    const r = w/2 - 10;
+    const cy = y + h/2 + (h*0.05);
+    const r = w/2 - (w*0.05);
     
     // Top Opening
     const openR = r * 0.6;
     const openRy = openR * 0.25;
-    const openY = cy - r + 5; 
+    const openY = cy - r + (r*0.1); 
 
     // --- 1. Glass Body (Back/Fill) ---
     ctx.fillStyle = COLORS.glassFill;
@@ -318,7 +321,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
     // --- 2. Contents ---
     if (matter === MatterState.SOLID) {
-      drawRock(ctx, cx - 15, cy + r - 40, 50);
+        const rockSize = r * 0.9;
+      drawRock(ctx, cx - rockSize*0.3, cy + r - rockSize*0.8, rockSize);
     } else if (matter === MatterState.LIQUID) {
       ctx.save();
       ctx.beginPath();
@@ -351,7 +355,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     ctx.strokeStyle = COLORS.glassBorder;
     
     // Main outline (skip top where opening is)
-    // Approximate by drawing two arcs or just draw full and overlay opening
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
@@ -365,7 +368,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
     // Shine (Curved highlight)
     ctx.beginPath();
-    ctx.arc(cx, cy, r - 6, Math.PI * 1.2, Math.PI * 1.4);
+    ctx.arc(cx, cy, r * 0.9, Math.PI * 1.2, Math.PI * 1.4);
     ctx.strokeStyle = COLORS.glassHighlight;
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
@@ -373,7 +376,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     
     // Secondary Shine (Bottom right)
     ctx.beginPath();
-    ctx.arc(cx, cy, r - 6, Math.PI * 0.2, Math.PI * 0.3);
+    ctx.arc(cx, cy, r * 0.9, Math.PI * 0.2, Math.PI * 0.3);
     ctx.lineWidth = 2;
     ctx.stroke();
   };
@@ -499,14 +502,27 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     ctx.fillStyle = 'rgba(0,0,0,0.1)';
     ctx.fillRect(0, tableY, width, 5);
 
-    // Layout
-    const cSize = 140; // Base size for layout
-    const gap = (width - (cSize * 3)) / 4;
-    const yBase = tableY - cSize + 40; // Objects sit on table, slightly overlapping horizon for perspective
+    // --- Responsive Layout Calculation ---
+    // We want 3 containers with even spacing.
+    // Margins on sides
+    const margin = width * 0.05; 
+    // Available width for containers
+    const availableWidth = width - (2 * margin);
+    // Determine Max size (don't get too big on desktop)
+    const maxCSize = 180;
+    // Determine size based on 3 items with gaps
+    // 3 * size + 2 * size*0.2 (gap) approx
+    const cSize = Math.min(maxCSize, availableWidth / 3.4);
+    const gap = (availableWidth - (cSize * 3)) / 2;
+    
+    // Y Position relative to table top
+    // They sit on tableY. 
+    // If container is very small (mobile), yBase might need adjustment
+    const yBase = tableY - cSize + (cSize * 0.2); // Sits slightly below horizon due to perspective
 
     const newBounds = containers.map((c, i) => ({
       id: c.id,
-      x: gap + i * (cSize + gap),
+      x: margin + i * (cSize + gap),
       y: yBase,
       w: cSize,
       h: cSize,
@@ -525,7 +541,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       // Selection Glow (Underneath)
       if (selectedId === container.id) {
         ctx.save();
-        ctx.translate(b.x + b.w/2, b.y + b.h - 10);
+        ctx.translate(b.x + b.w/2, b.y + b.h - (b.h*0.1));
         ctx.scale(1, 0.3);
         ctx.beginPath();
         ctx.arc(0, 0, b.w * 0.6, 0, Math.PI * 2);
@@ -535,7 +551,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       } else {
         // Normal Shadow
         ctx.save();
-        ctx.translate(b.x + b.w/2, b.y + b.h - 10);
+        ctx.translate(b.x + b.w/2, b.y + b.h - (b.h*0.1));
         ctx.scale(1, 0.3);
         ctx.beginPath();
         ctx.arc(0, 0, b.w * 0.5, 0, Math.PI * 2);
@@ -549,7 +565,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         drawCube(ctx, b.x, b.y, b.w, b.h, container.matter, state.currentWaterLevels[i], state.particles[i]);
       } else if (container.type === ContainerType.CYLINDER) {
         // Draw slightly taller for the "Tall Jar" look, extending up from the bottom
-        const tallH = b.h * 1.2;
+        const tallH = b.h * 1.3;
         const tallY = b.y + b.h - tallH;
         drawCylinder(ctx, b.x, tallY, b.w, tallH, container.matter, state.currentWaterLevels[i], state.particles[i]);
       } else if (container.type === ContainerType.SPHERE) {
@@ -557,10 +573,12 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       }
 
       // Label
-      ctx.font = 'bold 18px "Comic Neue", sans-serif';
+      // Dynamically scale font size
+      const fontSize = Math.max(12, b.w * 0.12);
+      ctx.font = `bold ${fontSize}px "Comic Neue", sans-serif`;
       ctx.fillStyle = '#1e293b';
       ctx.textAlign = 'center';
-      ctx.fillText(container.label, b.x + b.w / 2, tableY + b.h * 0.6); // Position label lower on the table
+      ctx.fillText(container.label, b.x + b.w / 2, tableY + b.h * 0.5); // Position label lower on the table
     });
 
     requestRef.current = requestAnimationFrame(drawScene);
@@ -580,7 +598,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
     simStateRef.current.containerBounds.forEach(b => {
       // Loose hitbox for usability - extended height for tall jar
-      if (x >= b.x - 10 && x <= b.x + b.w + 10 && y >= b.y - 40 && y <= b.y + b.h + 40) {
+      if (x >= b.x - (b.w*0.1) && x <= b.x + b.w + (b.w*0.1) && y >= b.y - (b.h*0.2) && y <= b.y + b.h * 1.5) {
         onSelect(b.id);
       }
     });
@@ -590,7 +608,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     <canvas
       ref={canvasRef}
       onClick={handleClick}
-      className="w-full h-full cursor-pointer touch-none"
+      className="w-full h-full cursor-pointer touch-none block"
     />
   );
 };

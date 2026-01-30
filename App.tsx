@@ -43,39 +43,39 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center bg-sky-50 text-slate-800">
       {/* Header */}
-      <header className="w-full bg-white shadow-md py-4 px-6 flex justify-between items-center z-10">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-blue-600 font-['Comic_Neue'] tracking-wide">
+      <header className="w-full bg-white shadow-md py-3 px-4 md:py-4 md:px-6 flex justify-between items-center z-10 sticky top-0">
+        <h1 className="text-xl md:text-3xl lg:text-4xl font-extrabold text-blue-600 font-['Comic_Neue'] tracking-wide truncate">
           ⚗️ States of Matter Lab
         </h1>
-        <div className="text-sm text-gray-500 hidden md:block">
+        <div className="text-xs md:text-sm text-gray-500 hidden sm:block whitespace-nowrap ml-4">
           Grade 3 Science Explorer
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-5xl p-4 flex flex-col gap-6">
+      <main className="flex-1 w-full max-w-5xl p-2 md:p-4 flex flex-col gap-4 md:gap-6">
         
         {/* Info Banner */}
         <div className={`
-          rounded-2xl p-6 shadow-sm border-l-8 transition-all duration-500
+          rounded-2xl p-4 md:p-6 shadow-sm border-l-8 transition-all duration-500
           ${!selectedContainer ? 'bg-white border-gray-300' : ''}
           ${selectedContainer?.matter === MatterState.SOLID ? 'bg-stone-100 border-stone-500' : ''}
           ${selectedContainer?.matter === MatterState.LIQUID ? 'bg-blue-100 border-blue-500' : ''}
           ${selectedContainer?.matter === MatterState.GAS ? 'bg-red-50 border-red-500' : ''}
         `}>
-          <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-             <span>💡</span> 
+          <h2 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
+             <span className="text-xl md:text-2xl">💡</span> 
              {selectedContainer 
-               ? `Selected: ${selectedContainer.label} (${selectedContainer.matter})` 
+               ? `Selected: ${selectedContainer.label}` 
                : 'Instructions'}
           </h2>
-          <p className="text-lg md:text-xl leading-relaxed text-slate-700">
+          <p className="text-base md:text-xl leading-relaxed text-slate-700">
             {currentFact}
           </p>
         </div>
 
         {/* Canvas */}
-        <div className="flex-1 bg-white rounded-3xl shadow-xl border-4 border-slate-200 overflow-hidden relative min-h-[300px] md:min-h-[400px]">
+        <div className="flex-1 bg-white rounded-3xl shadow-xl border-4 border-slate-200 overflow-hidden relative min-h-[35vh] md:min-h-[400px]">
           <SimulationCanvas 
             containers={containers} 
             selectedId={selectedId} 
@@ -84,30 +84,30 @@ const App: React.FC = () => {
           
           {/* Helper overlay if nothing selected */}
           {!selectedId && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full font-bold shadow-md animate-pulse pointer-events-none">
-              👆 Click a container to start!
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-100 text-yellow-800 px-3 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-full font-bold shadow-md animate-pulse pointer-events-none whitespace-nowrap">
+              👆 Click a container!
             </div>
           )}
         </div>
 
-        {/* Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8">
+        {/* Controls - Grid that stays in one row on mobile if possible, or wraps nicely */}
+        <div className="grid grid-cols-3 gap-2 md:gap-4 pb-4 md:pb-8">
           <Button
-            label="Add Solid (Rock)"
+            label="Solid"
             onClick={() => handleSetMatter(MatterState.SOLID)}
             colorClass="bg-stone-500 hover:bg-stone-600"
             icon="🪨"
             disabled={!selectedId}
           />
           <Button
-            label="Add Liquid (Water)"
+            label="Liquid"
             onClick={() => handleSetMatter(MatterState.LIQUID)}
             colorClass="bg-blue-500 hover:bg-blue-600"
             icon="💧"
             disabled={!selectedId}
           />
           <Button
-            label="Add Gas (Smoke)"
+            label="Gas"
             onClick={() => handleSetMatter(MatterState.GAS)}
             colorClass="bg-red-500 hover:bg-red-600"
             icon="💨"
