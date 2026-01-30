@@ -1,0 +1,5 @@
+{
+  "name": "States of Matter Explorer",
+  "description": "An interactive physics simulation for Grade 3 students to explore solids, liquids, and gases.",
+  "requestFramePermissions": []
+}
